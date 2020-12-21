@@ -1,0 +1,36 @@
+name: Prowler
+
+on:
+  push:
+    branches: [master, dev]
+  pull_request:
+    branches: [master, dev]
+
+jobs:
+  prowler:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@master
+        with:
+          repository: toniblyx/prowler
+          path: ./prowler
+
+      - uses: actions/checkout@master
+        with:
+          path: ./goc-prowler
+
+      - name: copy checks
+        run: cp ./goc-prowler/tools/prowler/checks/* ./prowler/checks
+
+      - name: copy groups
+        run: cp ./goc-prowler/tools/prowler/groups/* ./prowler/groups
+
+      - name: run prowler
+        working-directory: prowler
+        run: ./prowler -r ca-central-1 -f ca-central-1 -g gc
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+          AWS_DEFAULT_REGION: ca-central-1
