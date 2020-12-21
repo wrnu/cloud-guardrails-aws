@@ -6,17 +6,25 @@ on:
   pull_request:
     branches: [master, dev]
 
+  # schedule:
+  #   - cron:  '0 8 * * *'
+
+env:
+  AWS_DEFAULT_REGION: ca-central-1
+  
 jobs:
   prowler:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@master
+      - name: checkout prowler
+        uses: actions/checkout@master
         with:
           repository: toniblyx/prowler
           path: ./prowler
 
-      - uses: actions/checkout@master
+      - name: checkout cloud-guardrails-aws
+        uses: actions/checkout@master
         with:
           path: ./goc-prowler
 
@@ -33,4 +41,4 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
-          AWS_DEFAULT_REGION: ca-central-1
+          AWS_DEFAULT_REGION: ${{ env.AWS_DEFAULT_REGION }}
